@@ -4,21 +4,37 @@ import SlimSelect from 'slim-select';
 new SlimSelect({
   select: '#selectElement',
   settings: {
-    allowDeselect: true,
+    allowDeselect: document.getElementById('div.cat-info'),
   },
 });
 
-const url = `https://api.thecatapi.com/v1/images/search`;
+BASE_URL = `https://api.thecatapi.com/v1/breeds`;
 axios.defaults.headers.common['x-api-key'] =
   'live_Z0UHJxttXDpi84D6XggncnWBSjuu0VNSoSROyArWqIofjKLv9bkMBKAH7wCjVcZ6';
 
-fetch('https://api.thecatapi.com/v1/breeds')
+const refs = {
+  container: document.querySelector('.cat-info'),
+};
+
+fetch('https://api.thecatapi.com/v1/images/0XYvRd7oD')
   .then(response => {
     return response.json();
   })
-  .then(cats => {
-    console.log(cats);
+  .then(cat => {
+    breed_ids = cat.id;
+    const murkup = breed_ids;
+    console.log(cat);
+    refs.container.innerHTML = murkup;
   })
   .catch(error => {
     console.log(error);
   });
+
+const breedSelectEl = document.querySelector('#allowDeselect');
+
+const fetchBreeds = event => {
+  event.preventDefault();
+  console.log(event);
+};
+
+breedSelectEl.addEventListener('select', fetchBreeds);
