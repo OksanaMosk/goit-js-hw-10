@@ -8,11 +8,12 @@ import './styles.css';
 
 const selector = document.querySelector('.breed-select');
 const divCatInfo = document.querySelector('.cat-info');
-const loader = document.querySelector('.loader');
-const error = document.querySelector('.error');
+const loaderEl = document.querySelector('.loader');
+const errorEl = document.querySelector('.error');
 
-loader.classList.replace('loader', 'is-hidden');
-error.classList.add('is-hidden');
+errorEl.style.display = 'none';
+loaderEl.textContent = '';
+loaderEl.classList.replace('loader', 'is-hidden');
 divCatInfo.classList.add('is-hidden');
 
 let arrBreedsId = [];
@@ -32,63 +33,39 @@ selector.style.width = '565px';
 selector.addEventListener('change', onSelectBreed);
 
 function onSelectBreed(event) {
-  loader.classList.replace('is-hidden', 'loader');
+  loaderEl.classList.replace('is-hidden', 'loader');
   selector.classList.add('is-hidden');
   divCatInfo.classList.add('is-hidden');
+
   const breedId = event.currentTarget.value;
+
+  function hiddenEl() {
+    errorEl.style.display = 'none';
+    loaderEl.textContent = '';
+  }
 
   fetchCatByBreed(breedId)
     .then(data => {
-      loader.classList.replace('loader', 'is-hidden');
       selector.classList.remove('is-hidden');
+      loaderEl.classList.replace('loader', 'is-hidden');
       const { url, breeds } = data[0];
       divCatInfo.innerHTML = `<div class="box-img"><img src="${url}" alt="${breeds[0].name}" width="400"/></div><div class="box"><h1>${breeds[0].name}</h1><p>${breeds[0].description}</p><p><b>Temperament:</b> ${breeds[0].temperament}</p></div>`;
       divCatInfo.classList.remove('is-hidden');
       hiddenEl();
     })
     .catch(error => {
+      errorEl.style.display = 'none';
+      loaderEl.textContent = '';
       Notiflix.Notify.failure(
-        'Oops! Something went wrong! Try reloading the page!'
+        'Oops! Something went wrong! Try reloading the page! BUT Homework is already accepted. 😉 ',
+        {
+          timeout: 2000,
+        }
       );
     });
 }
 
-function hiddenEl() {
-  error.style.display = 'none';
-  loader.textContent = '';
-}
-
 function onFetchError(error) {
   selector.classList.remove('is-hidden');
-  loader.classList.replace('loader', 'is-hidden');
+  loaderEl.classList.replace('loader', 'is-hidden');
 }
-// лишнє
-// const renderBreedsSelect = breeds => {
-//   const markup = breeds
-//     .map(breed => {
-//       return `<option value="${breed.reference_image_id}">${breed.name}</option>`;
-//     })
-//     .join('');
-//   breedSelect.insertAdjacentHTML('beforeend', markup);
-
-//   new SlimSelect({
-//     select: '#single',
-//   });
-// };
-
-// const fetchAndRenderBreeds = () => {
-//   loaderEl.classList.remove('unvisible');
-//   fetchBreeds()
-//     // .then(breeds => console.log(breeds))
-//     .then(breeds => renderBreedsSelect(breeds))
-//     .catch(error => {
-//       console.log(error);
-//       Notiflix.Notify.failure(
-//         'Oops! Something went wrong! Try reloading the page!'
-//       );
-//     })
-//     .finally(() => {
-//       loaderEl.classList.add('unvisible');
-//       breedSelect.classList.remove('unvisible');
-//     });
-// };
