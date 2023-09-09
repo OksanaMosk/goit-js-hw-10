@@ -6,18 +6,10 @@ import { fetchBreeds, fetchCatByBreed } from './cat-api';
 import 'slim-select/dist/slimselect.css';
 import './styles.css';
 
-const ref = {
-  selector: document.querySelector('.breed-select'),
-  divCatInfo: document.querySelector('.cat-info'),
-  loader: document.querySelector('.loader'),
-  error: document.querySelector('.error'),
-};
-const { selector, divCatInfo, loader, error } = ref;
-
-function clearAll() {
-  divCatInfo.innerHTML = '';
-  selector = '';
-}
+const selector = document.querySelector('.breed-select');
+const divCatInfo = document.querySelector('.cat-info');
+const loader = document.querySelector('.loader');
+const error = document.querySelector('.error');
 
 loader.classList.replace('loader', 'is-hidden');
 error.classList.add('is-hidden');
@@ -70,3 +62,33 @@ function onFetchError(error) {
   selector.classList.remove('is-hidden');
   loader.classList.replace('loader', 'is-hidden');
 }
+// лишнє
+// const renderBreedsSelect = breeds => {
+//   const markup = breeds
+//     .map(breed => {
+//       return `<option value="${breed.reference_image_id}">${breed.name}</option>`;
+//     })
+//     .join('');
+//   breedSelect.insertAdjacentHTML('beforeend', markup);
+
+//   new SlimSelect({
+//     select: '#single',
+//   });
+// };
+
+// const fetchAndRenderBreeds = () => {
+//   loaderEl.classList.remove('unvisible');
+//   fetchBreeds()
+//     // .then(breeds => console.log(breeds))
+//     .then(breeds => renderBreedsSelect(breeds))
+//     .catch(error => {
+//       console.log(error);
+//       Notiflix.Notify.failure(
+//         'Oops! Something went wrong! Try reloading the page!'
+//       );
+//     })
+//     .finally(() => {
+//       loaderEl.classList.add('unvisible');
+//       breedSelect.classList.remove('unvisible');
+//     });
+// };
