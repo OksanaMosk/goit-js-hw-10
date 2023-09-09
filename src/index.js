@@ -1,61 +1,72 @@
 import axios from 'axios';
 import SlimSelect from 'slim-select';
+import Notiflix from 'notiflix';
 
-new SlimSelect({
-  select: '#selectElement',
-  settings: {
-    allowDeselect: document.getElementById('div.cat-info'),
-  },
-});
+import { fetchBreeds, fetchCatByBreed } from './cat-api';
+import 'slim-select/dist/slimselect.css';
+import './styles.css';
 
-BASE_URL = `https://api.thecatapi.com/v1/`;
-axios.defaults.headers.common['x-api-key'] =
-  'live_Z0UHJxttXDpi84D6XggncnWBSjuu0VNSoSROyArWqIofjKLv9bkMBKAH7wCjVcZ6';
-
-const refs = {
-  containerCatInfo: document.querySelector('.cat-info'),
+const ref = {
+  selector: document.querySelector('.breed-select'),
+  divCatInfo: document.querySelector('.cat-info'),
+  loader: document.querySelector('.loader'),
+  error: document.querySelector('.error'),
 };
+const { selector, divCatInfo, loader, error } = ref;
 
-fetchBreeds();
-function fetchBreeds() {
-  fetch('https://api.thecatapi.com/v1/breeds')
-    .then(response => {
-      return response.json();
+function clearAll() {
+  divCatInfo.innerHTML = '';
+  selector = '';
+}
+
+loader.classList.replace('loader', 'is-hidden');
+error.classList.add('is-hidden');
+divCatInfo.classList.add('is-hidden');
+
+let arrBreedsId = [];
+fetchBreeds()
+  .then(data => {
+    data.forEach(element => {
+      arrBreedsId.push({ text: element.name, value: element.id });
+    });
+    new SlimSelect({
+      select: selector,
+      data: arrBreedsId,
+    });
+  })
+  .catch(onFetchError);
+
+selector.style.width = '565px';
+selector.addEventListener('change', onSelectBreed);
+
+function onSelectBreed(event) {
+  loader.classList.replace('is-hidden', 'loader');
+  selector.classList.add('is-hidden');
+  divCatInfo.classList.add('is-hidden');
+  const breedId = event.currentTarget.value;
+
+  fetchCatByBreed(breedId)
+    .then(data => {
+      loader.classList.replace('loader', 'is-hidden');
+      selector.classList.remove('is-hidden');
+      const { url, breeds } = data[0];
+      divCatInfo.innerHTML = `<div class="box-img"><img src="${url}" alt="${breeds[0].name}" width="400"/></div><div class="box"><h1>${breeds[0].name}</h1><p>${breeds[0].description}</p><p><b>Temperament:</b> ${breeds[0].temperament}</p></div>`;
+      divCatInfo.classList.remove('is-hidden');
+      hiddenEl();
     })
-    .then(fetchCatByBreed)
-
     .catch(error => {
-      console.log(error);
+      Notiflix.Notify.failure(
+        'Oops! Something went wrong! Try reloading the page!'
+      );
     });
 }
 
-fetchCatByBreed();
-const breedId = e.currentTarget.value;
-function fetchCatByBreed(breedId) {
-   .then(data => {
-   const { url, breeds } = data[0];
-        return (refs.containerCatInfo.innerHTML = `<div class="cat"><img src = "${url} " alt = "${breeds[0].name}"></div>
-      <div><h2>${breeds[0].name}</h2><p>${breeds[0].description}</p><p><b>Temperament:</b>${breeds[0].temperament}</p></p</div>>`);
-   }
-  )
-  .catch(onFetchError);
-     } 
+function hiddenEl() {
+  error.style.display = 'none';
+  loader.textContent = '';
+}
 
-// fetchBreeds().then(data => {
-//   data.forEach(element => {
-//     arrBreedsId.push({ text: element.name, value: element.id });
-//     console.log(arrBreedsId);
-//   });
-//   new SlimSelect({
-//     select: selector,
-//     data: arrBreedsId,
-//   });
-// });
-// const breedSelectEl = document.querySelector('#allowDeselect');
-
-// fetchBreeds = event => {
-//   event.preventDefault();
-//   console.log(event);
-// };
-
-// breedSelectEl.addEventListener('select', fetchBreeds);
+function onFetchError(error) {
+  selector.classList.remove('is-hidden');
+  loader.classList.replace('loader', 'is-hidden');
+}
