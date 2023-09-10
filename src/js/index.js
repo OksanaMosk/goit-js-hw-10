@@ -19,35 +19,15 @@ function startPage() {
 
 divCatInfo.classList.add('box-hidden');
 selector.style.width = '565px';
-
 selector.addEventListener('change', onSelectBreed);
 
-// function onSelectBreed(event) {
-//   loaderEl.classList.replace('is-hidden', 'loader');
-//   selector.classList.add('is-hidden');
-//   divCatInfo.classList.add('is-hidden');
-//   divCatInfo.classList.add('box-hidden');
-
-//   const breedId = event.currentTarget.value;
-
-//   fetchCatByBreed(breedId)
-//     .then(data => {
-//       selector.classList.remove('is-hidden');
-//       loaderEl.classList.replace('loader', 'is-hidden');
-//       const { url, breeds } = data[0];
-//       divCatInfo.innerHTML = `<div class="box"><img src="${url}" alt="${breeds[0].name}" width="400"/></div><div class="box"><h1>${breeds[0].name}</h1><p>${breeds[0].description}</p><p><b>Temperament:</b> ${breeds[0].temperament}</p></div>`;
-//       event.stopPropagation();
-//       divCatInfo.classList.remove('is-hidden');
-//       divCatInfo.classList.remove('box-hidden');
-//       hiddenEl();
-//       divCatInfo.classList.remove('hidden');
-//     })
-//     .catch(error => {
-//       messageError();
-//     });
-// }
+let isLoad = true;
 
 function onSelectBreed(event) {
+  if (isLoad) {
+    isLoad = false;
+    return;
+  }
   const breedId = event.currentTarget.value;
 
   if (breedId) {
@@ -58,12 +38,14 @@ function onSelectBreed(event) {
 
     fetchCatByBreed(breedId)
       .then(data => {
+        divCatInfo.classList.remove('hidden');
         selector.classList.remove('is-hidden');
         loaderEl.classList.replace('loader', 'is-hidden');
-        divCatInfo.classList.remove('is-hidden');
-        divCatInfo.classList.remove('box-hidden');
         const { url, breeds } = data[0];
         divCatInfo.innerHTML = `<div class="box"><img src="${url}" alt="${breeds[0].name}" width="400"/></div><div class="box"><h1>${breeds[0].name}</h1><p>${breeds[0].description}</p><p><b>Temperament:</b> ${breeds[0].temperament}</p></div>`;
+        divCatInfo.classList.remove('is-hidden');
+        divCatInfo.classList.remove('box-hidden');
+        divCatInfo.classList.remove('hidden');
         hiddenEl();
       })
       .catch(error => {
@@ -71,6 +53,7 @@ function onSelectBreed(event) {
       });
   }
 }
+
 function hiddenEl() {
   errorEl.style.display = 'none';
   loaderEl.textContent = '';
