@@ -19,31 +19,58 @@ function startPage() {
 
 divCatInfo.classList.add('box-hidden');
 selector.style.width = '565px';
+
 selector.addEventListener('change', onSelectBreed);
 
-function onSelectBreed(event) {
-  loaderEl.classList.replace('is-hidden', 'loader');
-  selector.classList.add('is-hidden');
-  divCatInfo.classList.add('is-hidden');
-  divCatInfo.classList.add('box-hidden');
+// function onSelectBreed(event) {
+//   loaderEl.classList.replace('is-hidden', 'loader');
+//   selector.classList.add('is-hidden');
+//   divCatInfo.classList.add('is-hidden');
+//   divCatInfo.classList.add('box-hidden');
 
+//   const breedId = event.currentTarget.value;
+
+//   fetchCatByBreed(breedId)
+//     .then(data => {
+//       selector.classList.remove('is-hidden');
+//       loaderEl.classList.replace('loader', 'is-hidden');
+//       const { url, breeds } = data[0];
+//       divCatInfo.innerHTML = `<div class="box"><img src="${url}" alt="${breeds[0].name}" width="400"/></div><div class="box"><h1>${breeds[0].name}</h1><p>${breeds[0].description}</p><p><b>Temperament:</b> ${breeds[0].temperament}</p></div>`;
+//       event.stopPropagation();
+//       divCatInfo.classList.remove('is-hidden');
+//       divCatInfo.classList.remove('box-hidden');
+//       hiddenEl();
+//       divCatInfo.classList.remove('hidden');
+//     })
+//     .catch(error => {
+//       messageError();
+//     });
+// }
+
+function onSelectBreed(event) {
   const breedId = event.currentTarget.value;
 
-  fetchCatByBreed(breedId)
-    .then(data => {
-      selector.classList.remove('is-hidden');
-      loaderEl.classList.replace('loader', 'is-hidden');
-      const { url, breeds } = data[0];
-      divCatInfo.innerHTML = `<div class="box"><img src="${url}" alt="${breeds[0].name}" width="400"/></div><div class="box"><h1>${breeds[0].name}</h1><p>${breeds[0].description}</p><p><b>Temperament:</b> ${breeds[0].temperament}</p></div>`;
-      divCatInfo.classList.remove('is-hidden');
-      divCatInfo.classList.remove('box-hidden');
-      hiddenEl();
-    })
-    .catch(error => {
-      messageError();
-    });
-}
+  if (breedId) {
+    loaderEl.classList.replace('is-hidden', 'loader');
+    selector.classList.add('is-hidden');
+    divCatInfo.classList.add('is-hidden');
+    divCatInfo.classList.add('box-hidden');
 
+    fetchCatByBreed(breedId)
+      .then(data => {
+        selector.classList.remove('is-hidden');
+        loaderEl.classList.replace('loader', 'is-hidden');
+        divCatInfo.classList.remove('is-hidden');
+        divCatInfo.classList.remove('box-hidden');
+        const { url, breeds } = data[0];
+        divCatInfo.innerHTML = `<div class="box"><img src="${url}" alt="${breeds[0].name}" width="400"/></div><div class="box"><h1>${breeds[0].name}</h1><p>${breeds[0].description}</p><p><b>Temperament:</b> ${breeds[0].temperament}</p></div>`;
+        hiddenEl();
+      })
+      .catch(error => {
+        messageError();
+      });
+  }
+}
 function hiddenEl() {
   errorEl.style.display = 'none';
   loaderEl.textContent = '';
@@ -72,6 +99,7 @@ fetchBreeds()
       select: selector,
       data: arrBreedsId,
     });
+    selector.classList.remove('hidden');
   })
   .catch(error => {
     messageError();
